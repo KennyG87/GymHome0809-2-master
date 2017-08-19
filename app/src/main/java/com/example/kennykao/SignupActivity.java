@@ -1,22 +1,35 @@
 package com.example.kennykao;
 
+import android.Manifest;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
+import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Environment;
+import android.provider.MediaStore;
+import android.support.annotation.NonNull;
+import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Base64;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.kennykao.gymhome_2.R;
 import com.google.gson.Gson;
@@ -24,6 +37,8 @@ import com.google.gson.JsonObject;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
@@ -31,6 +46,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 import static com.example.kennykao.Common.networkConnected;
@@ -66,6 +82,11 @@ public class SignupActivity extends AppCompatActivity {
     private Button btTakeNow;
     private Button btUpload;
     private Boolean flag;
+    private ImageView ivChoosePicture;
+    private File file;
+    private static final int REQUEST_TAKE_PICTURE = 0;
+    private static final int REQUEST_UPLOAD_PICTURE = 1;
+    private byte[] image;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -92,6 +113,9 @@ public class SignupActivity extends AppCompatActivity {
         etID = (EditText) findViewById(R.id.etID);
         etEmail = (EditText) findViewById(R.id.etEmail);
         etIntro = (EditText) findViewById(R.id.etIntro);
+        ivChoosePicture = (ImageView) findViewById(R.id.ivChoosePicture);
+        btUpload = (Button) findViewById(R.id.btUpload);
+        btTakeNow = (Button) findViewById(R.id.btTakeNow);
 
         rgStatus.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
@@ -132,17 +156,18 @@ public class SignupActivity extends AppCompatActivity {
                 String id = etID.getText().toString().trim();
                 String email = etEmail.getText().toString().trim();
                 String intro = etIntro.getText().toString().trim();
+
 //                Authentication();
                 if (userStatus.toString().equals("0")) {
-                    stus = new StudentsVO(username, "", password, 1, name, userGender, id, email, intro, null, 0);
+                    stus = new StudentsVO(username, "", password, 1, name, userGender, id, email, intro, image, 0);
                     coas = null;
                     mems = new MembersVO(0, username, userStatus.toString(), nickname, 0);
                 } else if (userStatus.toString().equals("1")) {
                     stus = null;
-                    coas = new CoachesVO(username, "", password, 1, name, userGender, id, email, intro, null, 0);
+                    coas = new CoachesVO(username, "", password, 1, name, userGender, id, email, intro, image, 0);
                     mems = new MembersVO(0, username, userStatus.toString(), nickname, 0);
                 } else {
-                    Log.d("LogIn", "BBBBBBBBBBBBBBBBBBBBBBBBBBBBB: ");
+                    Log.d("Signup", "BBBBBBBBBBBBBBBBBBBBBBBBBBBBB: ");
                     return;
                 }
                 //Log.e("1233", stus.getStu_acc().toString());
@@ -182,6 +207,7 @@ public class SignupActivity extends AppCompatActivity {
 //            }else {
 //                role="1";
 //            }
+
             try {
                 jsonIn = getRemoteData(url, str);
             } catch (IOException e) {
@@ -253,5 +279,108 @@ public class SignupActivity extends AppCompatActivity {
         etIntro.setText("94愛教你");
     }
 
+    protected void onStart() {
+        super.onStart();
+        String[] permissions = {Manifest.permission.READ_EXTERNAL_STORAGE};
+        Common.askPermissions(this, permissions, Common.PERMISSION_READ_EXTERNAL_STORAGE);
+    }
+
+
+    public void onTakeNowClick(View view) {
+        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        file = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        file = new File(file, "picture.jpg");
+        Uri contentUri = FileProvider.getUriForFile(
+                this,getPackageName() + ".provider", file);
+        intent.putExtra(MediaStore.EXTRA_OUTPUT, contentUri);
+        if (isIntentAvailable(this, intent)) {
+            startActivityForResult(intent, REQUEST_TAKE_PICTURE);
+        } else {
+            Toast.makeText(this, R.string.NoCameraFound,
+                    Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    public void onTakePictureClick(View view) {
+        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        file = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        file = new File(file, "picture.jpg");
+        Uri contentUri = FileProvider.getUriForFile(
+                this,getPackageName() + ".provider", file);
+        intent.putExtra(MediaStore.EXTRA_OUTPUT, contentUri);
+        if (isIntentAvailable(this, intent)) {
+            startActivityForResult(intent, REQUEST_TAKE_PICTURE);
+        } else {
+            Toast.makeText(this, R.string.NoCameraFound,
+                    Toast.LENGTH_SHORT).show();
+        }
+    }
+
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           @NonNull String[] permissions,
+                                           @NonNull int[] grantResults) {
+        switch (requestCode) {
+            case Common.PERMISSION_READ_EXTERNAL_STORAGE:
+                if (grantResults.length > 0 &&
+                        grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    btTakeNow.setEnabled(true);
+                    btUpload.setEnabled(true);
+                } else {
+                    btTakeNow.setEnabled(false);
+                    btUpload.setEnabled(false);
+                }
+                break;
+        }
+    }
+
+    public void onUploadClick(View view) {
+        Intent intent = new Intent(Intent.ACTION_PICK,
+                MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        startActivityForResult(intent, REQUEST_UPLOAD_PICTURE);
+    }
+
+    public boolean isIntentAvailable(Context context, Intent intent) {
+        PackageManager packageManager = context.getPackageManager();
+        List<ResolveInfo> list = packageManager.queryIntentActivities(intent,
+                PackageManager.MATCH_DEFAULT_ONLY);
+        return list.size() > 0;
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
+        super.onActivityResult(requestCode, resultCode, intent);
+        if (resultCode == RESULT_OK) {
+            int newSize = 512;
+            switch (requestCode) {
+                case REQUEST_TAKE_PICTURE:
+                    Bitmap srcPicture = BitmapFactory.decodeFile(file.getPath());
+                    Bitmap downsizedPicture = Common.downSize(srcPicture, newSize);
+                    ivChoosePicture.setImageBitmap(downsizedPicture);
+                    ByteArrayOutputStream out1 = new ByteArrayOutputStream();
+                    downsizedPicture.compress(Bitmap.CompressFormat.JPEG, 100, out1);
+                    image = out1.toByteArray();
+                    break;
+
+                case REQUEST_UPLOAD_PICTURE:
+                    Uri uri = intent.getData();
+                    String[] columns = {MediaStore.Images.Media.DATA};
+                    Cursor cursor = getContentResolver().query(uri, columns,
+                            null, null, null);
+                    if (cursor != null && cursor.moveToFirst()) {
+                        String imagePath = cursor.getString(0);
+                        cursor.close();
+                        Bitmap srcImage = BitmapFactory.decodeFile(imagePath);
+                        Bitmap downsizedImage = Common.downSize(srcImage, newSize);
+                        ivChoosePicture.setImageBitmap(downsizedImage);
+                        ByteArrayOutputStream out2 = new ByteArrayOutputStream();
+                        downsizedImage.compress(Bitmap.CompressFormat.JPEG, 100, out2);
+                        image = out2.toByteArray();
+                    }
+                    break;
+            }
+        }
+    }
             }
 

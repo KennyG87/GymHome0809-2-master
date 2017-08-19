@@ -11,13 +11,14 @@ import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.widget.Toast;
 
+import java.io.ByteArrayOutputStream;
 import java.util.HashSet;
 import java.util.Set;
 
 public class Common {
 //    public static String URL = "http://192.168.196.189:8080/Spot_MySQL_Web/";
 //    public static String URL = "http://10.0.2.2:8081/GymHomeApp/StudentsServlet";
-    public static String URL = "http://10.0.2.2:8081/GymHome/";
+    public static String URL = "http://10.0.2.2:8081/ba102/";
     public final static String PREF_FILE = "preference";
     private static final String TAG = "Common";
     public static final int PERMISSION_READ_EXTERNAL_STORAGE = 0;
@@ -41,6 +42,14 @@ public class Common {
         Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
     }
 
+    public static byte[] bitmapToPNG(Bitmap srcBitmap) {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        // 轉成PNG不會失真，所以quality參數值會被忽略
+        srcBitmap.compress(Bitmap.CompressFormat.PNG, 100, baos);
+        return baos.toByteArray();
+    }
+
+    // 設定長寬不超過scaleSize
     public static Bitmap downSize(Bitmap srcBitmap, int newSize) {
         if (newSize <= 1) {
             // 如果欲縮小的尺寸過小，就直接定為128

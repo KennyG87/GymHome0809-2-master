@@ -8,4 +8,6 @@
     <string name="msg_NoCameraAppsFound">msg_NoCameraAppsFound</string>
     <string name="CannotNull">CannotNull</string>
     <string name="NoNetwork">NoNetwork</string>
+    <string name="NoCameraAppsFound">NoCameraAppsFound</string>
+    <string name="NoCameraFound">NoCameraFound</string>
 </resources>
