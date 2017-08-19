@@ -1,0 +1,11 @@
+<resources>
+    <string name="activity_signup" align="center">Sign Up</string>
+    <string name="activity_login" align="center">Login</string>
+
+    <string name="tryagain">tryagain</string>
+    <string name="InvalidUserOrPassword">InvalidUserOrPassword</string>
+    <string name="UserCannotNull">UserCannotNull</string>
+    <string name="msg_NoCameraAppsFound">msg_NoCameraAppsFound</string>
+    <string name="CannotNull">CannotNull</string>
+    <string name="NoNetwork">NoNetwork</string>
+</resources>

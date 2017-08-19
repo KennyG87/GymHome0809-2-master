@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/linearLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <TextView
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:text="Login"
+        android:textStyle="bold"
+        android:textSize="24dp"
+        android:textAlignment="center"
+        android:background="#00cc00"/>
+
+    <TextView android:id="@+id/linktoSignup"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:layout_marginTop="12dp"
+              android:text="還不是會員嗎? 馬上加入"
+              android:gravity="center"
+              android:onClick="onClick"
+              android:textSize="16dp"/>
+
+    <RadioGroup
+        android:layout_margin="@dimen/fab_margin"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:orientation="horizontal"
+        android:id="@+id/rgMembers">
+
+
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="我是:"
+            android:textStyle="bold"
+            android:textSize="16dp"/>
+
+        <RadioButton
+            android:id="@+id/rbStudents"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:checked="true"
+            android:text="健身者"
+            android:textSize="16dp"
+            android:textStyle="bold"/>
+
+        <RadioButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/rbCoaches"
+            android:text="教練"
+            android:textStyle="bold"
+            android:textSize="16dp"/>
+
+    </RadioGroup>>
+
+
+    <EditText
+        android:id="@+id/etName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="15dp"
+        android:textAlignment="center"
+        android:hint="User-Name" />
+
+    <EditText
+        android:id="@+id/etPassword"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAlignment="center"
+        android:hint="Password"
+        android:inputType="textPassword" />
+
+    <TextView android:id="@+id/tvNopassword"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:layout_marginTop="12dp"
+              android:text="Forgot your password?"
+              android:gravity="center"
+              android:onClick="onClick"
+              android:textSize="16dp"/>
+
+    <Button
+        android:id="@+id/btLogin"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="Login"
+        android:onClick="onClick"
+        android:textStyle="bold"/>
+
+
+
+
+</LinearLayout>
